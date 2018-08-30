@@ -46,7 +46,11 @@ func (s *Server) handleMessages(wr http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		s.msgs <- string(buf)
+		select {
+		case s.msgs <- string(buf):
+		default:
+			// send it
+		}
 
 		wr.WriteHeader(http.StatusAccepted)
 		return
